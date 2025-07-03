@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-500">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minifier - EZToolZone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            backgroundLight: '#f9fafb',
+            backgroundDark: '#0f172a',
+            cardDark: '#1e293b'
+          }
+        }
+      }
+    };
+  </script>
+  <script>
+    if (!localStorage.getItem('theme')) {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+    } else if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="transition-colors duration-500 bg-gradient-to-br from-white via-blue-50 to-blue-100 text-gray-800 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
+  <header class="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 onclick="toggleTheme()" class="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer select-none">EZ<span class="text-green-500">ToolZone</span></h1>
+      <nav class="space-x-6 text-sm font-medium hidden md:block">
+        <a href="../index.html#tools" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Tools</a>
+        <a href="../index.html#about" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">About</a>
+        <a href="../index.html#contact" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto px-4 py-16">
+    <div class="max-w-3xl mx-auto bg-white dark:bg-cardDark p-6 rounded-xl shadow-md transition-colors">
+      <h2 class="text-3xl font-bold mb-6 text-center text-blue-600 dark:text-blue-400">🔧 Code Minifier</h2>
+
+      <label class="block mb-2 font-semibold">Paste your code here:</label>
+      <textarea id="codeInput" rows="10" placeholder="Paste HTML/CSS/JS code here..." class="w-full p-3 mb-4 border rounded-lg dark:bg-gray-800 dark:text-white"></textarea>
+
+      <div class="flex flex-wrap gap-4 mb-4">
+        <button onclick="minifyCode()" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">Minify</button>
+        <button onclick="clearCode()" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Clear</button>
+        <button onclick="copyMinifiedCode()" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">Copy</button>
+      </div>
+
+      <label class="block mb-2 font-semibold">Minified Code:</label>
+      <textarea id="minifiedOutput" rows="6" readonly class="w-full p-3 mb-4 border rounded-lg dark:bg-gray-800 dark:text-white"></textarea>
+
+      <div id="popup" class="hidden mt-4 p-3 rounded text-white text-center font-medium"></div>
+    </div>
+  </main>
+
+  <footer class="bg-gray-900 text-white py-10 border-t border-gray-700 dark:bg-gray-950">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between flex-col md:flex-row items-center space-y-4 md:space-y-0">
+      <p>© 2025 EZToolZone. All rights reserved.</p>
+      <div class="space-x-4 mt-4 md:mt-0">
+        <a href="#" class="hover:underline">GitHub</a>
+        <a href="#" class="hover:underline">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    function minifyCode() {
+      const input = document.getElementById('codeInput').value;
+      if (!input.trim()) {
+        showPopup('Please enter some code to minify.', 'bg-red-600');
+        return;
+      }
+      const minified = input.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+      document.getElementById('minifiedOutput').value = minified;
+      showPopup('Code minified successfully!', 'bg-green-600');
+    }
+
+    function clearCode() {
+      document.getElementById('codeInput').value = '';
+      document.getElementById('minifiedOutput').value = '';
+      showPopup('Cleared.', 'bg-red-500');
+    }
+
+    function copyMinifiedCode() {
+      const output = document.getElementById('minifiedOutput');
+      if (!output.value.trim()) {
+        showPopup('Nothing to copy.', 'bg-red-600');
+        return;
+      }
+      output.select();
+      document.execCommand('copy');
+      showPopup('Copied to clipboard!', 'bg-blue-600');
+    }
+
+    function showPopup(message, colorClass) {
+      const popup = document.getElementById('popup');
+      popup.innerText = message;
+      popup.className = `mt-4 p-3 rounded text-white text-center font-medium ${colorClass}`;
+      popup.classList.remove('hidden');
+      setTimeout(() => popup.classList.add('hidden'), 2500);
+    }
+  </script>
+</body>
+</html>

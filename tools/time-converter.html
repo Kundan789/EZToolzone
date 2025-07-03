@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-500">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Time Converter - EZToolZone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            backgroundLight: '#f9fafb',
+            backgroundDark: '#0f172a',
+            cardDark: '#1e293b'
+          }
+        }
+      }
+    };
+  </script>
+  <script>
+    if (!localStorage.getItem('theme')) {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+    } else if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-white via-blue-50 to-blue-100 text-gray-800 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-gray-100 transition-colors duration-500 min-h-screen flex flex-col">
+  <header class="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 onclick="toggleTheme()" class="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer">EZ<span class="text-green-500">ToolZone</span></h1>
+      <nav class="space-x-6 text-sm font-medium hidden md:block">
+        <a href="New folder\index.html" class="hover:underline">Home</a>
+        <a href="../index.html#about" class="hover:underline">About</a>
+        <a href="../index.html#contact" class="hover:underline">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto px-4 py-16">
+    <div class="max-w-2xl mx-auto bg-white dark:bg-cardDark p-6 rounded-xl shadow-md transition-colors">
+      <h2 class="text-3xl font-bold mb-6 text-center text-blue-600 dark:text-blue-400">⏱️ Time Converter</h2>
+      <label class="block mb-2 font-semibold">Enter value:</label>
+      <input id="timeValue" type="number" min="0" placeholder="Enter number" class="w-full p-3 mb-4 border rounded-lg dark:bg-gray-800 dark:text-white">
+
+      <label class="block mb-2 font-semibold">From:</label>
+      <select id="fromUnit" class="w-full p-3 mb-4 border rounded-lg dark:bg-gray-800 dark:text-white">
+        <option value="seconds">Seconds</option>
+        <option value="minutes">Minutes</option>
+        <option value="hours">Hours</option>
+        <option value="days">Days</option>
+      </select>
+
+      <label class="block mb-2 font-semibold">To:</label>
+      <select id="toUnit" class="w-full p-3 mb-4 border rounded-lg dark:bg-gray-800 dark:text-white">
+        <option value="seconds">Seconds</option>
+        <option value="minutes">Minutes</option>
+        <option value="hours">Hours</option>
+        <option value="days">Days</option>
+      </select>
+
+      <div class="flex gap-4">
+        <button onclick="convertTime()" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded transition">Convert</button>
+        <button onclick="resetFields()" class="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded transition">Reset</button>
+      </div>
+
+      <div id="result" class="mt-6 text-center text-lg font-semibold"></div>
+      <div id="popup" class="hidden mt-4 p-3 rounded text-white text-center font-medium"></div>
+    </div>
+  </main>
+
+  <footer class="bg-gray-900 text-white py-10 border-t border-gray-700 dark:bg-gray-950">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between flex-col md:flex-row items-center space-y-4 md:space-y-0">
+      <p>© 2025 EZToolZone. All rights reserved.</p>
+      <div class="space-x-4">
+        <a href="#" class="hover:underline">GitHub</a>
+        <a href="#" class="hover:underline">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    function showPopup(message, colorClass) {
+      const popup = document.getElementById('popup');
+      popup.innerText = message;
+      popup.className = `mt-4 p-3 rounded text-white text-center font-medium ${colorClass}`;
+      popup.classList.remove('hidden');
+      setTimeout(() => popup.classList.add('hidden'), 2500);
+    }
+
+    function convertTime() {
+      const value = parseFloat(document.getElementById('timeValue').value);
+      const from = document.getElementById('fromUnit').value;
+      const to = document.getElementById('toUnit').value;
+      const result = document.getElementById('result');
+
+      if (isNaN(value)) {
+        showPopup('Please enter a valid number.', 'bg-red-600');
+        result.innerText = '';
+        return;
+      }
+
+      const secondsMap = {
+        seconds: 1,
+        minutes: 60,
+        hours: 3600,
+        days: 86400
+      };
+
+      const inSeconds = value * secondsMap[from];
+      const converted = inSeconds / secondsMap[to];
+
+      result.innerText = `${value} ${from} = ${converted.toFixed(2)} ${to}`;
+      showPopup('Conversion successful!', 'bg-green-600');
+    }
+
+    function resetFields() {
+      document.getElementById('timeValue').value = '';
+      document.getElementById('fromUnit').selectedIndex = 0;
+      document.getElementById('toUnit').selectedIndex = 0;
+      document.getElementById('result').innerText = '';
+      showPopup('Reset successful.', 'bg-red-500');
+    }
+  </script>
+</body>
+</html>

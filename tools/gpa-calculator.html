@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-500 h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GPA Calculator - EZToolZone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              backgroundLight: '#f9fafb',
+              backgroundDark: '#0f172a',
+              cardDark: '#1e293b'
+            }
+          }
+        }
+      };
+    </script>
+    <script>
+      if (!localStorage.getItem('theme')) {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.classList.add('dark');
+        }
+      } else if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+  </head>
+  <body class="flex flex-col min-h-screen transition-colors duration-500 bg-gradient-to-br from-white via-blue-50 to-blue-100 text-gray-800 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-gray-100">
+    <header class="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-500">
+      <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <h1 onclick="toggleTheme()" class="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer select-none">
+          EZ<span class="text-green-500">ToolZone</span>
+        </h1>
+        <nav class="space-x-6 text-sm font-medium hidden md:block">
+          <a href="../index.html#tools" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Tools</a>
+          <a href="../index.html#about" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">About</a>
+          <a href="../index.html#contact" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-16">
+      <div class="max-w-xl mx-auto bg-white dark:bg-cardDark p-6 rounded-xl shadow-md transition-colors">
+        <h2 class="text-3xl font-bold mb-6 text-center text-blue-600 dark:text-blue-400">🎓 GPA Calculator</h2>
+        <form id="gpaForm" class="space-y-4">
+          <div id="courseContainer"></div>
+          <button type="button" onclick="addCourse()" class="block w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition">+ Add Course</button>
+          <div class="flex gap-4">
+            <button type="button" onclick="handleGpaCalculation()" class="flex-1 bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition">Calculate GPA</button>
+            <button type="button" onclick="resetForm()" class="flex-1 bg-red-500 text-white p-3 rounded-lg hover:bg-red-600 transition">Reset</button>
+          </div>
+        </form>
+        <div id="gpaResult" class="mt-6 text-center text-lg font-semibold"></div>
+        <div class="mt-4 text-sm text-gray-600 dark:text-gray-300">
+          <strong>GPA Scale:</strong> A=10, B=8, C=6, D=4, F=0 (example scale; enter grades accordingly)
+        </div>
+      </div>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-10 border-t border-gray-700 dark:bg-gray-950 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 flex justify-between flex-col md:flex-row items-center space-y-4 md:space-y-0">
+        <p>© 2025 EZToolZone. All rights reserved.</p>
+        <div class="space-x-4 mt-4 md:mt-0">
+          <a href="#" class="hover:underline">GitHub</a>
+          <a href="#" class="hover:underline">LinkedIn</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        html.classList.toggle('dark');
+        localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+      }
+
+      function addCourse() {
+        const container = document.getElementById('courseContainer');
+        const div = document.createElement('div');
+        div.className = 'flex gap-4 mb-2';
+        div.innerHTML = `
+          <input type="text" name="course" placeholder="Course Name" class="flex-1 p-2 border rounded dark:bg-gray-700 dark:text-white">
+          <input type="number" name="credits" placeholder="Credits" min="0" step="0.5" class="w-24 p-2 border rounded dark:bg-gray-700 dark:text-white">
+          <input type="number" name="grade" placeholder="Grade (0-10)" min="0" max="10" step="0.1" class="w-24 p-2 border rounded dark:bg-gray-700 dark:text-white">
+        `;
+        container.appendChild(div);
+      }
+
+      function resetForm() {
+        document.getElementById('courseContainer').innerHTML = '';
+        document.getElementById('gpaResult').innerText = '';
+        addCourse();
+      }
+
+      function showErrorPopup(message) {
+        const popup = document.createElement('div');
+        popup.innerText = message;
+        popup.className = 'fixed top-6 right-6 bg-red-600 text-white px-4 py-2 rounded shadow-lg z-[9999] animate-bounce';
+        document.body.appendChild(popup);
+        setTimeout(() => popup.remove(), 3000);
+      }
+
+      function showSuccessCard(gpa) {
+        const resultDiv = document.getElementById('gpaResult');
+        resultDiv.innerHTML = `
+          <div class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 p-4 rounded-lg shadow-md animate-fade-in">
+            🎉 Your GPA is <strong>${gpa}</strong>
+          </div>
+        `;
+      }
+
+      function handleGpaCalculation() {
+        const courses = [...document.querySelectorAll('#courseContainer > div')];
+        let totalCredits = 0;
+        let weightedGrades = 0;
+
+        if (courses.length === 0) {
+          showErrorPopup('⚠️ Please add at least one course.');
+          return;
+        }
+
+        let hasError = false;
+        let anyInputFilled = false;
+
+        for (const course of courses) {
+          const courseNameInput = course.querySelector('input[name="course"]');
+          const creditInput = course.querySelector('input[name="credits"]');
+          const gradeInput = course.querySelector('input[name="grade"]');
+
+          const courseName = courseNameInput.value.trim();
+          const credit = creditInput.value.trim();
+          const grade = gradeInput.value.trim();
+
+          if (courseName || credit || grade) anyInputFilled = true;
+
+          [courseNameInput, creditInput, gradeInput].forEach(el => el.classList.remove('border-red-500'));
+
+          if (!courseName || !credit || !grade) {
+            showErrorPopup('⚠️ All fields are required.');
+            [courseNameInput, creditInput, gradeInput].forEach(el => {
+              if (!el.value.trim()) el.classList.add('border-red-500');
+            });
+            hasError = true;
+            break;
+          }
+
+          const creditVal = parseFloat(credit);
+          const gradeVal = parseFloat(grade);
+
+          if (isNaN(creditVal) || creditVal <= 0) {
+            showErrorPopup('⚠️ Invalid credit value.');
+            creditInput.classList.add('border-red-500');
+            hasError = true;
+            break;
+          }
+
+          if (isNaN(gradeVal) || gradeVal < 0 || gradeVal > 10) {
+            showErrorPopup('⚠️ Grade must be between 0 and 10.');
+            gradeInput.classList.add('border-red-500');
+            hasError = true;
+            break;
+          }
+
+          totalCredits += creditVal;
+          weightedGrades += creditVal * gradeVal;
+        }
+
+        if (!anyInputFilled) {
+          showErrorPopup('⚠️ Please enter at least one course detail.');
+          return;
+        }
+
+        if (hasError) return;
+
+        if (totalCredits === 0) {
+          showErrorPopup('⚠️ Total credits cannot be zero.');
+          return;
+        }
+
+        const gpa = (weightedGrades / totalCredits).toFixed(2);
+        showSuccessCard(gpa);
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        addCourse();
+      });
+    </script>
+  </body>
+</html>

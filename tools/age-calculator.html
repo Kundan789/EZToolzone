@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-500 h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Age Calculator - EZToolZone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              backgroundLight: '#f9fafb',
+              backgroundDark: '#0f172a',
+              cardDark: '#1e293b'
+            }
+          }
+        }
+      };
+    </script>
+    <script>
+      if (!localStorage.getItem('theme')) {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.classList.add('dark');
+        }
+      } else if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+  </head>
+  <body class="flex flex-col min-h-screen transition-colors duration-500 bg-gradient-to-br from-white via-blue-50 to-blue-100 text-gray-800 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-gray-100">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-500">
+      <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <h1 onclick="toggleTheme()" class="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer select-none">
+          EZ<span class="text-green-500">ToolZone</span>
+        </h1>
+        <nav class="space-x-6 text-sm font-medium hidden md:block">
+          <a href="#tools" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Tools</a>
+          <a href="#about" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">About</a>
+          <a href="#contact" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-16">
+      <div class="max-w-xl mx-auto bg-white dark:bg-cardDark p-6 rounded-xl shadow-md transition-colors">
+        <h2 class="text-3xl font-bold mb-6 text-center text-blue-600 dark:text-blue-400">🎂 Enter Your Birth Date</h2>
+        <div class="mb-6">
+          <label for="dob" class="block text-sm font-medium mb-2">Select your birth date:</label>
+          <input
+            type="date"
+            id="dob"
+            class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white dark:border-gray-600"
+          />
+        </div>
+        <button
+          onclick="calculateAge()"
+          class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
+        >
+          Calculate Age
+        </button>
+
+        <div id="result" class="mt-6 hidden border-t pt-6 text-center dark:border-gray-600">
+          <h3 class="text-xl font-bold mb-4">Your Age Summary</h3>
+          <div class="space-y-2 text-left">
+            <p id="age"></p>
+            <p id="days"></p>
+            <p id="zodiac"></p>
+            <p id="birthDay"></p>
+            <p id="nextBday"></p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-10 border-t border-gray-700 dark:bg-gray-950 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 flex justify-between flex-col md:flex-row items-center space-y-4 md:space-y-0">
+        <p>© 2025 EZToolZone. All rights reserved.</p>
+        <div class="space-x-4 mt-4 md:mt-0">
+          <a href="#" class="hover:underline">GitHub</a>
+          <a href="#" class="hover:underline">LinkedIn</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        if (html.classList.contains('dark')) {
+          html.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        } else {
+          html.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        }
+      }
+
+      function calculateAge() {
+        const dobInput = document.getElementById("dob").value;
+        if (!dobInput) return alert("Please enter your date of birth");
+
+        const dob = new Date(dobInput);
+        const today = new Date();
+
+        const ageYears = today.getFullYear() - dob.getFullYear();
+        const ageMonths = today.getMonth() - dob.getMonth();
+        const ageDays = today.getDate() - dob.getDate();
+
+        const diffTime = Math.abs(today - dob);
+        const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        const totalWeeks = Math.floor(totalDays / 7);
+        const totalMonths = Math.floor(totalDays / 30.44);
+        const totalHours = Math.floor(diffTime / (1000 * 60 * 60));
+        const totalMinutes = Math.floor(diffTime / (1000 * 60));
+
+        const birthDayName = dob.toLocaleDateString('en-US', { weekday: 'long' });
+
+        const month = dob.getMonth() + 1;
+        const day = dob.getDate();
+        let zodiac = "";
+        if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) zodiac = "Aquarius";
+        else if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) zodiac = "Pisces";
+        else if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) zodiac = "Aries";
+        else if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) zodiac = "Taurus";
+        else if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) zodiac = "Gemini";
+        else if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) zodiac = "Cancer";
+        else if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) zodiac = "Leo";
+        else if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) zodiac = "Virgo";
+        else if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) zodiac = "Libra";
+        else if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) zodiac = "Scorpio";
+        else if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) zodiac = "Sagittarius";
+        else zodiac = "Capricorn";
+
+        const nextBirthday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+        if (today > nextBirthday) nextBirthday.setFullYear(today.getFullYear() + 1);
+        const diffToNextBday = nextBirthday - today;
+        const daysToNextBday = Math.ceil(diffToNextBday / (1000 * 60 * 60 * 24));
+
+        document.getElementById("age").innerHTML = `👤 You are <strong>${ageYears}</strong> years, <strong>${Math.abs(ageMonths)}</strong> months, and <strong>${Math.abs(ageDays)}</strong> days old.`;
+        document.getElementById("days").innerHTML = `📅 That's roughly <strong>${totalDays}</strong> days, <strong>${totalWeeks}</strong> weeks, <strong>${totalMonths}</strong> months, <strong>${totalHours}</strong> hours, or <strong>${totalMinutes}</strong> minutes.`;
+        document.getElementById("zodiac").innerHTML = `🔮 Your Zodiac sign is: <strong>${zodiac}</strong>`;
+        document.getElementById("birthDay").innerHTML = `📆 You were born on a <strong>${birthDayName}</strong>`;
+        document.getElementById("nextBday").innerHTML = `🎉 Your next birthday is in <strong>${daysToNextBday}</strong> day(s)!`;
+
+        document.getElementById("result").classList.remove("hidden");
+      }
+    </script>
+  </body>
+</html>

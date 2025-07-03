@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-500 h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loan Calculator - EZToolZone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            backgroundLight: '#f9fafb',
+            backgroundDark: '#0f172a',
+            cardDark: '#1e293b'
+          }
+        }
+      }
+    };
+  </script>
+  <script>
+    if (!localStorage.getItem('theme')) {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+    } else if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen transition-colors duration-500 bg-gradient-to-br from-white via-blue-50 to-blue-100 text-gray-800 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-gray-100">
+  <header class="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 onclick="toggleTheme()" class="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer select-none">EZ<span class="text-green-500">ToolZone</span></h1>
+      <nav class="space-x-6 text-sm font-medium hidden md:block">
+        <a href="../index.html#tools" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Tools</a>
+        <a href="../index.html#about" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">About</a>
+        <a href="../index.html#contact" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto px-4 py-16">
+    <div class="max-w-xl mx-auto bg-white dark:bg-cardDark p-6 rounded-xl shadow-md transition-colors">
+      <h2 class="text-3xl font-bold mb-6 text-center text-blue-600 dark:text-blue-400">💰 Loan Calculator</h2>
+      <form id="loanForm" class="space-y-4">
+        <input type="number" id="amount" placeholder="Loan Amount" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white">
+        <input type="number" id="interest" placeholder="Annual Interest Rate (%)" step="0.01" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white">
+        <input type="number" id="years" placeholder="Loan Term (Years)" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white">
+        <button type="button" onclick="calculateLoan()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg transition">Calculate</button>
+      </form>
+
+      <div id="result" class="mt-6 text-center text-lg font-semibold"></div>
+      <canvas id="paymentChart" class="mt-8"></canvas>
+    </div>
+  </main>
+
+  <footer class="bg-gray-900 text-white py-10 border-t border-gray-700 dark:bg-gray-950 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between flex-col md:flex-row items-center space-y-4 md:space-y-0">
+      <p>© 2025 EZToolZone. All rights reserved.</p>
+      <div class="space-x-4 mt-4 md:mt-0">
+        <a href="#" class="hover:underline">GitHub</a>
+        <a href="#" class="hover:underline">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    function calculateLoan() {
+      const principal = parseFloat(document.getElementById('amount').value);
+      const annualRate = parseFloat(document.getElementById('interest').value);
+      const years = parseFloat(document.getElementById('years').value);
+
+      const result = document.getElementById('result');
+      if (!principal || !annualRate || !years) {
+        result.innerHTML = '<div class="text-red-500">Please fill all the fields.</div>';
+        return;
+      }
+
+      const months = years * 12;
+      const monthlyRate = annualRate / 100 / 12;
+      const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1);
+      const totalPayment = emi * months;
+      const totalInterest = totalPayment - principal;
+
+      result.innerHTML = `
+        <div class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 p-4 rounded-lg shadow-md">
+          Monthly EMI: <strong>₹${emi.toFixed(2)}</strong><br>
+          Total Payment: <strong>₹${totalPayment.toFixed(2)}</strong><br>
+          Total Interest: <strong>₹${totalInterest.toFixed(2)}</strong>
+        </div>
+      `;
+
+      const ctx = document.getElementById('paymentChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Principal', 'Interest'],
+          datasets: [{
+            label: 'Payment Breakdown',
+            data: [principal, totalInterest],
+            backgroundColor: ['#3b82f6', '#f87171'],
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

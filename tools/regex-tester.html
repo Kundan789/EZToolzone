@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-500">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Regex Tester - EZToolZone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            backgroundLight: '#f9fafb',
+            backgroundDark: '#0f172a',
+            cardDark: '#1e293b'
+          }
+        }
+      }
+    };
+  </script>
+  <script>
+    if (!localStorage.getItem('theme')) {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+    } else if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="transition-colors duration-500 bg-gradient-to-br from-white via-blue-50 to-blue-100 text-gray-800 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
+  <header class="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 onclick="toggleTheme()" class="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer select-none">EZ<span class="text-green-500">ToolZone</span></h1>
+      <nav class="space-x-6 text-sm font-medium hidden md:block">
+        <a href="../index.html#tools" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Tools</a>
+        <a href="../index.html#about" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">About</a>
+        <a href="../index.html#contact" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto px-4 py-16">
+    <div class="max-w-3xl mx-auto bg-white dark:bg-cardDark p-6 rounded-xl shadow-md transition-colors">
+      <h2 class="text-3xl font-bold mb-6 text-center text-blue-600 dark:text-blue-400">🧪 Regex Tester</h2>
+      <label class="block mb-2 font-semibold">Regular Expression:</label>
+      <input id="regexInput" type="text" placeholder="Enter regex pattern (e.g. ^[a-z0-9]+$)" class="w-full p-3 mb-4 border rounded-lg dark:bg-gray-800 dark:text-white"/>
+
+      <label class="block mb-2 font-semibold">Test String:</label>
+      <textarea id="testString" placeholder="Enter text to test your regex against..." rows="6" class="w-full p-3 mb-4 border rounded-lg dark:bg-gray-800 dark:text-white"></textarea>
+
+      <div class="flex flex-wrap gap-4 mb-4">
+        <button onclick="runRegexTest()" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">Run</button>
+        <button onclick="clearRegexFields()" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Clear</button>
+      </div>
+
+      <div id="regexResult" class="text-sm font-medium text-center py-3"></div>
+      <div id="popup" class="hidden mt-4 p-3 rounded text-white text-center font-medium"></div>
+
+      <div class="mt-10 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg text-sm">
+        <h3 class="font-bold mb-2 text-blue-800 dark:text-blue-200">📘 Regex Tips</h3>
+        <ul class="list-disc list-inside space-y-1 text-blue-700 dark:text-blue-100">
+          <li><code>^</code>: Start of string</li>
+          <li><code>$</code>: End of string</li>
+          <li><code>.</code>: Any character</li>
+          <li><code>*</code>: 0 or more times</li>
+          <li><code>+</code>: 1 or more times</li>
+          <li><code>?</code>: Optional (0 or 1 times)</li>
+          <li><code>\d</code>: Digit</li>
+          <li><code>\w</code>: Word character (a-z, A-Z, 0-9, _)</li>
+          <li><code>[abc]</code>: a or b or c</li>
+          <li><code>(abc)</code>: Group "abc"</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-gray-900 text-white py-10 border-t border-gray-700 dark:bg-gray-950">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between flex-col md:flex-row items-center space-y-4 md:space-y-0">
+      <p>© 2025 EZToolZone. All rights reserved.</p>
+      <div class="space-x-4 mt-4 md:mt-0">
+        <a href="#" class="hover:underline">GitHub</a>
+        <a href="#" class="hover:underline">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    function showPopup(message, colorClass) {
+      const popup = document.getElementById('popup');
+      popup.innerText = message;
+      popup.className = `mt-4 p-3 rounded text-white text-center font-medium ${colorClass}`;
+      popup.classList.remove('hidden');
+      setTimeout(() => popup.classList.add('hidden'), 2500);
+    }
+
+    function runRegexTest() {
+      const regexStr = document.getElementById('regexInput').value;
+      const testStr = document.getElementById('testString').value;
+      const resultEl = document.getElementById('regexResult');
+
+      if (!regexStr.trim() || !testStr.trim()) {
+        showPopup('Please enter both regex and test text.', 'bg-red-600');
+        resultEl.innerText = '';
+        return;
+      }
+
+      try {
+        const regex = new RegExp(regexStr, 'g');
+        const matches = testStr.match(regex);
+        if (matches) {
+          resultEl.innerText = `✅ Matches found: ${matches.length}\n${matches.join(', ')}`;
+          resultEl.className = 'text-green-600 text-center';
+          showPopup('Match found!', 'bg-green-600');
+        } else {
+          resultEl.innerText = '❌ No matches found.';
+          resultEl.className = 'text-yellow-600 text-center';
+          showPopup('No match.', 'bg-yellow-600');
+        }
+      } catch (error) {
+        resultEl.innerText = '⚠️ Invalid regex pattern.';
+        resultEl.className = 'text-red-600 text-center';
+        showPopup('Invalid regex!', 'bg-red-600');
+      }
+    }
+
+    function clearRegexFields() {
+      document.getElementById('regexInput').value = '';
+      document.getElementById('testString').value = '';
+      document.getElementById('regexResult').innerText = '';
+      showPopup('Cleared.', 'bg-red-500');
+    }
+  </script>
+</body>
+</html>

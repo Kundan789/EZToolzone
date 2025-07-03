@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-500">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UUID Generator - EZToolZone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            backgroundLight: '#f9fafb',
+            backgroundDark: '#0f172a',
+            cardDark: '#1e293b'
+          }
+        }
+      }
+    };
+  </script>
+  <script>
+    function toggleTheme() {
+      const htmlEl = document.documentElement;
+      if (htmlEl.classList.contains('dark')) {
+        htmlEl.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        htmlEl.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+    if (!localStorage.getItem('theme')) {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+    } else if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-br from-white via-blue-50 to-blue-100 text-gray-800 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
+  <header class="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 onclick="toggleTheme()" class="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer select-none">EZ<span class="text-green-500">ToolZone</span></h1>
+      <nav class="space-x-6 text-sm font-medium hidden md:block">
+        <a href="../index.html#tools" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Tools</a>
+        <a href="../index.html#about" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">About</a>
+        <a href="../index.html#contact" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-4 py-10 text-center">
+    <h2 class="text-3xl font-bold mb-6">🔐 UUID Generator</h2>
+    <button onclick="generateUUID()" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition mb-4">Generate UUID</button>
+    <div id="uuidDisplay" class="bg-white dark:bg-gray-800 p-4 rounded shadow text-lg font-mono break-all">Click above to generate UUID</div>
+    <button onclick="copyUUID()" class="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition">Copy</button>
+    <div id="copyMessage" class="text-sm mt-2 text-green-500 hidden">Copied to clipboard ✅</div>
+  </main>
+
+  <footer class="bg-gray-900 text-white py-10 border-t border-gray-700 dark:bg-gray-950 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between flex-col md:flex-row items-center space-y-4 md:space-y-0">
+      <p>© 2025 EZToolZone. All rights reserved.</p>
+      <div class="space-x-4 mt-4 md:mt-0">
+        <a href="#" class="hover:underline">GitHub</a>
+        <a href="#" class="hover:underline">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function generateUUID() {
+      const uuid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      );
+      document.getElementById('uuidDisplay').innerText = uuid;
+      document.getElementById('copyMessage').classList.add('hidden');
+    }
+
+    function copyUUID() {
+      const text = document.getElementById('uuidDisplay').innerText;
+      if (!text || text.includes("Click above")) return;
+      navigator.clipboard.writeText(text).then(() => {
+        document.getElementById('copyMessage').classList.remove('hidden');
+        setTimeout(() => {
+          document.getElementById('copyMessage').classList.add('hidden');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

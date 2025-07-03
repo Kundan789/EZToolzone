@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-500">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Converter - EZToolZone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            backgroundLight: '#f9fafb',
+            backgroundDark: '#0f172a',
+            cardDark: '#1e293b'
+          }
+        }
+      }
+    };
+  </script>
+  <script>
+    function toggleTheme() {
+      const htmlEl = document.documentElement;
+      if (htmlEl.classList.contains('dark')) {
+        htmlEl.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        htmlEl.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+    if (!localStorage.getItem('theme')) {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+    } else if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-br from-white via-blue-50 to-blue-100 text-gray-800 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
+   <header class="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 onclick="toggleTheme()" class="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer select-none">EZ<span class="text-green-500">ToolZone</span></h1>
+      <nav class="space-x-6 text-sm font-medium hidden md:block">
+        <a href="../index.html#tools" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Tools</a>
+        <a href="../index.html#about" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">About</a>
+        <a href="../index.html#contact" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-4 py-10">
+    <h2 class="text-3xl font-bold text-center mb-6">🎨 Color Converter</h2>
+
+    <div class="flex items-center gap-4 mb-4">
+      <input type="color" id="colorPicker" class="w-16 h-16 border-2 rounded-lg" onchange="updateColors(this.value)" />
+      <input type="text" id="hexValue" value="#3498db" class="p-2 border rounded dark:bg-gray-800" onchange="updateColors(this.value)" />
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <div class="bg-blue-100 dark:bg-cardDark p-4 rounded shadow">
+        <p class="font-medium">RGB:</p>
+        <p id="rgbOutput"></p>
+      </div>
+      <div class="bg-green-100 dark:bg-cardDark p-4 rounded shadow">
+        <p class="font-medium">HSL:</p>
+        <p id="hslOutput"></p>
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <h3 class="text-xl font-semibold mb-2">🎨 Gradient Preview</h3>
+      <div id="gradientBox" class="h-32 rounded-lg border shadow-inner" draggable="true"></div>
+    </div>
+
+    <div class="flex gap-4 mb-6">
+      <button onclick="exportPalette()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Export Palette</button>
+    </div>
+  </main>
+
+  <footer class="bg-gray-900 text-white py-10 border-t border-gray-700 dark:bg-gray-950 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between flex-col md:flex-row items-center space-y-4 md:space-y-0">
+      <p>© 2025 EZToolZone. All rights reserved.</p>
+      <div class="space-x-4 mt-4 md:mt-0">
+        <a href="#" class="hover:underline">GitHub</a>
+        <a href="#" class="hover:underline">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function updateColors(hex) {
+      document.getElementById('hexValue').value = hex;
+      const rgb = hexToRgb(hex);
+      const hsl = rgbToHsl(rgb);
+      document.getElementById('rgbOutput').innerText = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+      document.getElementById('hslOutput').innerText = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+      document.getElementById('gradientBox').style.background = `linear-gradient(135deg, ${hex}, white)`;
+    }
+
+    function hexToRgb(hex) {
+      hex = hex.replace('#', '');
+      const bigint = parseInt(hex, 16);
+      return {
+        r: (bigint >> 16) & 255,
+        g: (bigint >> 8) & 255,
+        b: bigint & 255
+      };
+    }
+
+    function rgbToHsl({ r, g, b }) {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+      if (max === min) {
+        h = s = 0;
+      } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+      }
+      return {
+        h: Math.round(h * 360),
+        s: Math.round(s * 100),
+        l: Math.round(l * 100)
+      };
+    }
+
+    function exportPalette() {
+      const hex = document.getElementById('hexValue').value;
+      const rgb = document.getElementById('rgbOutput').innerText;
+      const hsl = document.getElementById('hslOutput').innerText;
+      const palette = `HEX: ${hex}\n${rgb}\n${hsl}`;
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(palette)
+          .then(() => showPopup("🎉 Color palette copied to clipboard!", true))
+          .catch(() => fallbackDownload(palette));
+      } else {
+        fallbackDownload(palette);
+      }
+    }
+
+    function fallbackDownload(palette) {
+      const blob = new Blob([palette], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'color-palette.txt';
+      link.click();
+      showPopup("⬇️ Downloaded color-palette.txt instead.", true);
+    }
+
+    function showPopup(message, isSuccess) {
+      const popup = document.createElement('div');
+      popup.innerHTML = `${isSuccess ? '✅' : '❌'} ${message}`;
+      popup.className = 'fixed bottom-10 right-5 bg-green-600 text-white py-2 px-4 rounded shadow-md z-50 animate-bounce';
+      document.body.appendChild(popup);
+      setTimeout(() => popup.remove(), 2500);
+    }
+
+    window.onload = () => updateColors('#3498db');
+  </script>
+</body>
+</html>

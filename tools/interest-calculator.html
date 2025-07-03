@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-500">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interest Calculator - EZToolZone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            backgroundLight: '#f9fafb',
+            backgroundDark: '#0f172a',
+            cardDark: '#1e293b'
+          }
+        }
+      }
+    };
+  </script>
+  <script>
+    function toggleTheme() {
+      const htmlEl = document.documentElement;
+      if (htmlEl.classList.contains('dark')) {
+        htmlEl.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        htmlEl.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+    if (!localStorage.getItem('theme')) {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+    } else if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-br from-white via-blue-50 to-blue-100 text-gray-800 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
+  <header class="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 onclick="toggleTheme()" class="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer select-none">EZ<span class="text-green-500">ToolZone</span></h1>
+      <nav class="space-x-6 text-sm font-medium hidden md:block">
+        <a href="../index.html#tools" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Tools</a>
+        <a href="../index.html#about" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">About</a>
+        <a href="../index.html#contact" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-4 py-10">
+    <h2 class="text-3xl font-bold text-center mb-6">💰 Interest Calculator</h2>
+
+    <div class="grid gap-4 mb-6">
+      <input id="principal" type="number" placeholder="Principal Amount" class="p-3 border rounded dark:bg-gray-800" />
+      <input id="rate" type="number" placeholder="Annual Interest Rate (%)" class="p-3 border rounded dark:bg-gray-800" />
+      <input id="time" type="number" placeholder="Time Period (in years)" class="p-3 border rounded dark:bg-gray-800" />
+    </div>
+
+    <div class="flex gap-4 mb-6">
+      <button onclick="calculateInterest()" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">Calculate</button>
+      <button onclick="resetForm()" class="bg-gray-600 text-white px-6 py-3 rounded hover:bg-gray-700">Reset</button>
+    </div>
+
+    <div id="result" class="text-lg font-semibold text-center mb-6"></div>
+
+    <div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
+      <canvas id="interestChart" height="200"></canvas>
+    </div>
+  </main>
+
+  <footer class="bg-gray-900 text-white py-10 border-t border-gray-700 dark:bg-gray-950 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between flex-col md:flex-row items-center space-y-4 md:space-y-0">
+      <p>© 2025 EZToolZone. All rights reserved.</p>
+      <div class="space-x-4 mt-4 md:mt-0">
+        <a href="#" class="hover:underline">GitHub</a>
+        <a href="#" class="hover:underline">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let chart;
+
+    function calculateInterest() {
+      const p = parseFloat(document.getElementById('principal').value);
+      const r = parseFloat(document.getElementById('rate').value);
+      const t = parseFloat(document.getElementById('time').value);
+      const result = document.getElementById('result');
+
+      if (!p || !r || !t || p <= 0 || r <= 0 || t <= 0) {
+        result.innerText = '⚠️ Please enter valid positive numbers for all fields.';
+        result.className = 'text-red-500 text-center font-medium';
+        return;
+      }
+
+      const total = p * Math.pow((1 + r / 100), t);
+      const interest = total - p;
+      result.innerText = `Total Amount: ₹${total.toFixed(2)} | Interest: ₹${interest.toFixed(2)}`;
+      result.className = 'text-center text-lg font-semibold';
+
+      const data = Array.from({ length: t + 1 }, (_, i) => Math.round(p * Math.pow((1 + r / 100), i)));
+      const labels = Array.from({ length: t + 1 }, (_, i) => `${i}y`);
+
+      if (chart) chart.destroy();
+
+      const ctx = document.getElementById('interestChart').getContext('2d');
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Amount Over Time',
+            data,
+            fill: true,
+            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+            borderColor: '#3b82f6',
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            tooltip: { mode: 'index', intersect: false },
+            legend: { display: true }
+          },
+          scales: {
+            y: { beginAtZero: true },
+            x: { title: { display: true, text: 'Years' } }
+          }
+        }
+      });
+    }
+
+    function resetForm() {
+      document.getElementById('principal').value = '';
+      document.getElementById('rate').value = '';
+      document.getElementById('time').value = '';
+      document.getElementById('result').innerText = '';
+      document.getElementById('result').className = '';
+      if (chart) chart.destroy();
+    }
+  </script>
+</body>
+</html>

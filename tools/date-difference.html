@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-500">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Date Difference Calculator - EZToolZone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            backgroundLight: '#f9fafb',
+            backgroundDark: '#0f172a',
+            cardDark: '#1e293b'
+          }
+        }
+      }
+    };
+  </script>
+  <script>
+    if (!localStorage.getItem('theme')) {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+    } else if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="transition-colors duration-500 bg-gradient-to-br from-white via-blue-50 to-blue-100 text-gray-800 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
+  <header class="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 onclick="toggleTheme()" class="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer select-none">EZ<span class="text-green-500">ToolZone</span></h1>
+      <nav class="space-x-6 text-sm font-medium hidden md:block">
+        <a href="../index.html#tools" class="hover:underline">Tools</a>
+        <a href="../index.html#about" class="hover:underline">About</a>
+        <a href="../index.html#contact" class="hover:underline">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto px-4 py-16">
+    <div class="max-w-xl mx-auto bg-white dark:bg-cardDark p-6 rounded-xl shadow-md transition-colors">
+      <h2 class="text-3xl font-bold mb-6 text-center text-blue-600 dark:text-blue-400">📅 Date Difference Calculator</h2>
+
+      <label class="block mb-2 font-semibold">Start Date:</label>
+      <input type="date" id="startDate" class="w-full p-3 mb-4 border rounded-lg dark:bg-gray-800 dark:text-white"/>
+
+      <label class="block mb-2 font-semibold">End Date:</label>
+      <input type="date" id="endDate" class="w-full p-3 mb-4 border rounded-lg dark:bg-gray-800 dark:text-white"/>
+
+      <div class="flex flex-wrap gap-4 mb-4">
+        <button onclick="calculateDateDiff()" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">Calculate</button>
+        <button onclick="resetDates()" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Reset</button>
+      </div>
+
+      <div id="dateResult" class="text-lg font-medium text-center py-4"></div>
+      <div id="popup" class="hidden mt-4 p-3 rounded text-white text-center font-medium"></div>
+    </div>
+  </main>
+
+  <footer class="bg-gray-900 text-white py-10 border-t border-gray-700 dark:bg-gray-950">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between flex-col md:flex-row items-center space-y-4 md:space-y-0">
+      <p>© 2025 EZToolZone. All rights reserved.</p>
+      <div class="space-x-4 mt-4 md:mt-0">
+        <a href="#" class="hover:underline">GitHub</a>
+        <a href="#" class="hover:underline">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    function showPopup(message, colorClass) {
+      const popup = document.getElementById('popup');
+      popup.innerText = message;
+      popup.className = `mt-4 p-3 rounded text-white text-center font-medium ${colorClass}`;
+      popup.classList.remove('hidden');
+      setTimeout(() => popup.classList.add('hidden'), 2500);
+    }
+
+    function calculateDateDiff() {
+      const start = new Date(document.getElementById('startDate').value);
+      const end = new Date(document.getElementById('endDate').value);
+      const resultEl = document.getElementById('dateResult');
+
+      if (!start.getTime() || !end.getTime()) {
+        showPopup('Please select both dates.', 'bg-red-600');
+        resultEl.innerText = '';
+        return;
+      }
+
+      const diffInMs = Math.abs(end - start);
+      const days = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+      const months = Math.floor(days / 30);
+      const years = Math.floor(days / 365);
+
+      resultEl.innerHTML = `🗓️ Difference: <strong>${days}</strong> days, ~<strong>${months}</strong> months, ~<strong>${years}</strong> years`;
+      showPopup('Date difference calculated!', 'bg-green-600');
+    }
+
+    function resetDates() {
+      document.getElementById('startDate').value = '';
+      document.getElementById('endDate').value = '';
+      document.getElementById('dateResult').innerText = '';
+      showPopup('Fields reset.', 'bg-red-500');
+    }
+  </script>
+</body>
+</html>
