@@ -4,7 +4,7 @@
 
 ## 🌟 Live Preview
 
-Visit 👉 [EZToolZone Live](https://yourdeploymenturl.com)
+Visit 👉 [EZToolZone Live](https://kundan789.github.io/EZToolzone)
 
 ## 🧰 Included Tools
 
