@@ -1,0 +1,157 @@
+<!-- ✅ EZToolZone Full Tool Website (All 20 Tools) -->
+<!-- Summary: Homepage + Individual tool pages (frontend only) -->
+
+<!-- 📄 index.html (Main Website Page) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EZToolZone - All-in-One Smart Tools</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+  tailwind.config = {
+    darkMode: 'class' // now we control dark mode manually
+  }
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="transition-colors duration-500 bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 relative overflow-x-hidden">
+  <!-- Page Loader -->
+  <div id="loader" class="fixed inset-0 bg-white dark:bg-gray-900 flex items-center justify-center z-50 opacity-100 transition-opacity duration-500">
+    <div class="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+  </div>
+
+  <!-- Navbar -->
+  </head>
+<body class="transition-colors duration-500 bg-gradient-to-br from-white via-blue-50 to-blue-100 text-gray-800 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 dark:text-gray-100">
+  <header class="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900 shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 onclick="toggleTheme()" class="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer select-none">EZ<span class="text-green-500">ToolZone</span></h1>
+      <nav class="space-x-6 text-sm font-medium hidden md:block">
+        <a href="#tools" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Tools</a>
+        <a href="#about" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">About</a>
+        <a href="#contact" class="relative inline-block after:block after:absolute after:h-[2px] after:bg-blue-600 after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="text-center py-20 bg-gradient-to-br from-blue-100 to-green-50 dark:from-gray-800 dark:to-gray-900">
+    <h2 class="text-4xl font-bold mb-4">All-in-One Smart Web Tools</h2>
+    <p class="text-lg text-gray-600 dark:text-gray-300 mb-6">Compress. Convert. Calculate. Instantly.</p>
+    <a href="#tools" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full transition">Explore Tools</a>
+  </section>
+
+  <!-- Tool Categories Section -->
+  <section id="tools" class="max-w-7xl mx-auto px-4 py-16">
+    <h3 class="text-3xl font-bold text-center mb-10">All Tools</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Dynamically list 20 tools -->
+      <script>
+        const tools = [
+          { title: '🖼️ Image Compressor', file: 'image-compressor.html' },
+          { title: '🔣 Text to Binary', file: 'text-binary.html' },
+          { title: '⚖️ BMI Calculator', file: 'bmi-calculator.html' },
+          { title: '📷 QR Generator', file: 'qr-generator.html' },
+          { title: '🔐 Password Generator', file: 'password-generator.html' },
+          { title: '⌨️ Typing Speed Tester', file: 'typing-speed.html' },
+          { title: '📅 Age Calculator', file: 'age-calculator.html' },
+          { title: '🎓 GPA Calculator', file: 'gpa-calculator.html' },
+          { title: '📊 Loan EMI Calculator', file: 'loan-emi.html' },
+          { title: '🧾 JSON Formatter', file: 'json-formatter.html' },
+          { title: '🔍 Regex Tester', file: 'regex-tester.html' },
+          { title: '🧼 Minifier', file: 'minifier.html' },
+          { title: '🧬 Base64 Encoder/Decoder', file: 'base64-encoder.html' },
+          { title: '📆 Date Difference', file: 'date-difference.html' },
+          { title: '⏱️ Time Converter', file: 'time-converter.html' },
+          { title: '🎨 Color Picker', file: 'color-picker.html' },
+          { title: '🌈 Color Converter', file: 'color-converter.html' },
+          { title: '💡 Interest Calculator', file: 'interest-calculator.html' },
+          { title: '📉 Percentage Calculator', file: 'percentage-calculator.html' },
+          { title: '🆔 UUID Generator', file: 'uuid-generator.html' },
+          { title: '🔍 Text Metcher', file: 'text-metcher.html' }
+        ];
+
+        document.addEventListener("DOMContentLoaded", () => {
+          const container = document.querySelector("#tools .grid");
+          tools.forEach(tool => {
+            const card = document.createElement("div");
+            card.className = "bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition";
+            card.innerHTML = `
+              <h4 class=\"text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100\">${tool.title}</h4>
+              <p class=\"text-sm text-gray-600 dark:text-gray-300 mb-4\">Try our handy tool.</p>
+              <a href=\"tools/${tool.file}\" class=\"text-blue-600 dark:text-blue-400 font-semibold\">Open Tool →</a>`;
+            container.appendChild(card);
+          });
+        });
+      </script>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="bg-white dark:bg-gray-900 py-16 px-4">
+    <div class="max-w-3xl mx-auto text-center">
+      <h3 class="text-3xl font-bold mb-4">About EZToolZone</h3>
+      <p class="text-gray-600 text-lg">EZToolZone offers lightweight, fast, and free tools built for daily tasks. Whether you're compressing images or testing your typing speed, we've got you covered — no login, no downloads, no nonsense.</p>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="bg-blue-50 dark:bg-gray-900 py-16 px-4">
+    <div class="max-w-xl mx-auto">
+      <h3 class="text-3xl font-bold text-center mb-6">Contact Us</h3>
+      <form class="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+  <input type="text" placeholder="Name" class="w-full px-4 py-3 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+  <input type="email" placeholder="Email" class="w-full px-4 py-3 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+  <textarea placeholder="Your message..." class="w-full px-4 py-3 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 h-32"></textarea>
+  <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full w-full">Send</button>
+</form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-10 border-t border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between flex-col md:flex-row items-center space-y-4 md:space-y-0">
+      <p>© 2025 EZToolZone. All rights reserved.</p>
+      <div class="space-x-4 mt-4 md:mt-0">
+        <a href="#" class="hover:underline">GitHub</a>
+        <a href="#" class="hover:underline">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+<script>
+  function toggleTheme() {
+    const htmlEl = document.documentElement;
+    if (htmlEl.classList.contains('dark')) {
+      htmlEl.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else {
+      htmlEl.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  }
+
+  // On load apply saved theme
+  document.addEventListener('DOMContentLoaded', () => {
+  const loader = document.getElementById('loader');
+  if (loader) {
+    loader.style.opacity = '0';
+    setTimeout(() => loader.remove(), 500);
+  }
+});
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark') document.documentElement.classList.add('dark');
+    else if (saved === 'light') document.documentElement.classList.remove('dark');
+  });
+</script>
+</body>
+</html>
